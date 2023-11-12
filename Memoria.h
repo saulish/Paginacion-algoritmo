@@ -70,16 +70,32 @@ public:
 
     }
     int siguiente(int x){
-        for(int i=x;i<memoria.size()-1;i++){
-            if(memoria[i].get_id()!=-1)
+        for(int i=x;i<memoria.size();i++){
+            if(memoria[i].get_id()!=-1 && memoria[i].get_id()!= memoria[ejecucion].get_id())
                 return i;
         }
+        for(int i=0;i<x;i++){
+            if(memoria[i].get_id()!=-1 && memoria[i].get_id()!= memoria[ejecucion].get_id())
+                return i;
+        }
+
+
     }
     void set_ejecucion(int x){
         ejecucion=x;
     }
     int get_ejecucion(){
         return ejecucion;
+    }
+    void fin_quantum(int x, int quantum){
+        memoria[x].set_quantum(quantum);
+        vector<int>t_pos=memoria[x].get_vector();
+        int next=t_pos[t_pos.size()-1];
+        if(ocupado>0){
+            next=siguiente(next);
+            ejecucion=next;
+        }
+
     }
     void terminado(int x){
         vector<int>t_pos=memoria[x].get_vector();

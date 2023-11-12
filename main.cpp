@@ -387,10 +387,14 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
 
     int i = 0;
     int j = 0, procesos = 0;
-    int en_ejecucion=memoria.get_proceso(0).get_id();
+    int en_ejecucion=0;
     memoria.set_ejecucion(en_ejecucion);
     do {
         en_ejecucion=memoria.get_ejecucion();
+        imprimir(20,15);
+        cout<<"MEMORIA "<<memoria.get_ejecucion();
+        imprimir(20,16);
+        cout<<"PROGRAMA "<<en_ejecucion;
         imprimir_disponible(memoria);
         imprimir_op_actual(izq, der, i, en_ejecucion, memoria);//IMPRIME EL APARTADO DEL ACTUAL
         imprimir(70, 0);
@@ -402,7 +406,8 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
         Sleep(1000);
         memoria.restar();
         if(memoria.get_proceso(en_ejecucion).get_quantum()==0){
-            memoria.terminado(en_ejecucion);
+            memoria.fin_quantum(en_ejecucion,quantum);
+
         }
     } while (memoria.get_ocupado()>0);
     system("pause");
