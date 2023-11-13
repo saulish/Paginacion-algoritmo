@@ -3,6 +3,10 @@
 #include <iostream>
 #include <map>
 #include "proceso.h"
+#include <Windows.h>
+#define BLUE            1
+#define RED             4
+#define DEFAULT         7
 using namespace std;
 void imprimir_tabla(int x, int y) {
     COORD coord;
@@ -60,15 +64,7 @@ public:
     void modificar_terminado(int i){
         memoria[i].set_terminado(true);
     }
-    void restar(){
-        vector<int>t_pos=memoria[ejecucion].get_vector();
-        proceso p;
-        for(int i=0;i<t_pos.size();i++){
-            memoria[t_pos[i]].restar_quantum();
 
-        }
-
-    }
     int siguiente(int x){
         for(int i=x;i<memoria.size();i++){
             if(memoria[i].get_id()!=-1 && memoria[i].get_id()!= memoria[ejecucion].get_id())
@@ -78,7 +74,7 @@ public:
             if(memoria[i].get_id()!=-1 && memoria[i].get_id()!= memoria[ejecucion].get_id())
                 return i;
         }
-
+        return x;
 
     }
     void set_ejecucion(int x){
@@ -90,9 +86,8 @@ public:
     void fin_quantum(int x, int quantum){
         memoria[x].set_quantum(quantum);
         vector<int>t_pos=memoria[x].get_vector();
-        int next=t_pos[t_pos.size()-1];
         if(ocupado>0){
-            next=siguiente(next);
+            int next=siguiente(ejecucion);
             ejecucion=next;
         }
 
@@ -113,7 +108,21 @@ public:
         }
 
     }
+    void restar(){
+        vector<int>t_pos=memoria[ejecucion].get_vector();
+        memoria[ejecucion].aumentar_transcurrido();
+        if(memoria[ejecucion].get_tme()== memoria[ejecucion].get_transcurrido()){
+            terminado(ejecucion);
+        }
+        proceso p;
+        for(int i=0;i<t_pos.size();i++){
+            memoria[t_pos[i]].restar_quantum();
+
+        }
+
+    }
     friend ostream& operator <<(ostream& salida, Memoria& memoria) {
+        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         int cont_espacio=0,aux=0,auxx=0;
         for (int i = 0; i < memoria.size(); i++) {
             if(cont_espacio==5) {
@@ -128,7 +137,13 @@ public:
             }
             else {
                 imprimir_tabla(100+auxx,10+aux);
-                salida <<"|"<<memoria.get_proceso(i).get_id()<<"|" ;
+                salida <<"|";
+                if(memoria.get_proceso(memoria.get_ejecucion()).get_id()==memoria.get_proceso(i).get_id())
+                    SetConsoleTextAttribute(hConsole, BLUE);
+
+                salida<<memoria.get_proceso(i).get_id();
+                SetConsoleTextAttribute(hConsole, DEFAULT);
+                salida<<"|" ;
             }
             cont_espacio++;
             auxx+=5;

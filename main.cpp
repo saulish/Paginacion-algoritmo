@@ -120,13 +120,13 @@ void imprimir_op_actual(int izq, int der, int i, int j, Memoria& memoria) {
     imprimir(der, 11);
     cout << "|";
     imprimir(40, 12);
-    cout << "Quantum: " << memoria.get_proceso(j).get_quantum();
+    cout << "Quantum: " << memoria.get_proceso(j).get_quantum()<<"  ";
     imprimir(der, 12);
     cout << "|";
     imprimir(izq, 13);
     cout << "|";
     imprimir(40, 13);
-    cout << "TME: " << memoria.get_proceso(j).get_tme() << endl;
+    cout << "TME: " << memoria.get_proceso(j).get_tme() << "  "<<endl;
     imprimir(der, 13);
     cout << "|";
     imprimir(izq, 14);
@@ -147,7 +147,21 @@ void imprimir_op_actual(int izq, int der, int i, int j, Memoria& memoria) {
     cout << "Numero 2: " << memoria.get_proceso(j).get_num2() << endl;
     imprimir(der, 16);
     cout << "|";
-    //SE SALTA AL 15 DEBIDO A QUE DEBAJO VAN EL TIEMPO RESTANTE Y EL TRANSCURRIDO
+
+    imprimir(izq, 17);
+    cout << "|";
+    imprimir(40, 17);
+    cout << "Transcurrido: " << memoria.get_proceso(j).get_transcurrido() <<"  "<< endl;
+    imprimir(der, 17);
+    cout << "|";
+
+    imprimir(izq, 18);
+    cout << "|";
+    imprimir(40, 18);
+    cout << "Restante: " << memoria.get_proceso(j).get_tme()-memoria.get_proceso(j).get_transcurrido() << "  "<<endl;
+    imprimir(der, 18);
+    cout << "|";
+
     imprimir(izq, 19);
     cout << "|";
     imprimir(40, 19);
@@ -404,8 +418,9 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
         cout<<memoria;
 
         Sleep(1000);
+
         memoria.restar();
-        if(memoria.get_proceso(en_ejecucion).get_quantum()==0){
+        if(memoria.get_proceso(en_ejecucion).get_quantum()<1){
             memoria.fin_quantum(en_ejecucion,quantum);
 
         }
