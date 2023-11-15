@@ -4,6 +4,7 @@
 #include <random>
 #include <Windows.h>
 #include "Memoria.h"
+#include <cmath>
 #include "Proceso.h"
 #include <ctime>
 using namespace std;
@@ -111,12 +112,14 @@ void imprimir_op_actual(int izq, int der, int i, int j, Memoria& memoria) {
     cout << "|";
     imprimir(der, 10);
     cout << "|";
+    imprimir(40, 10);
+    cout << "ID: " << memoria.get_proceso(j).get_id() << "  " << endl;
     imprimir(izq, 10);
     cout << "|";
     imprimir(izq, 11);
     cout << "|";
     imprimir(40, 11);
-    cout << "ID: " << memoria.get_proceso(j).get_id() << "  " << endl;
+    cout << "Peso: " << memoria.get_proceso(j).get_peso() << "  " << endl;
     imprimir(der, 11);
     cout << "|";
     imprimir(40, 12);
@@ -286,17 +289,18 @@ void espera_cpu(vector<proceso>&bloqueados, Memoria& memoria,int &segundos, int 
     } while (true);
 }
 void add_proceso(Memoria& memoria, vector<proceso>& bloqueados, vector<proceso>& listos, vector<proceso>& finalizados, int& segundos, int& quantum) {
-    proceso t_proceso = ingresar_datos(memoria, (memoria.size() + bloqueados.size() + listos.size())+finalizados.size(), 0);
+    proceso t_proceso = ingresar_datos(memoria, memoria.get_cantidad(), 0);
 
     t_proceso.set_llegada(segundos);
     t_proceso.set_inicio();
     t_proceso.set_quantum(quantum);
-    if (memoria.size() + bloqueados.size() < 5) {
-        //memoria.ingresar_proceso(t_proceso);//BUSCAR DONDE METER
+    if(memoria.get_disponible()>=t_proceso.get_peso()){
+        memoria.set_proceso(t_proceso);
     }
-    else {
+    else{
         listos.push_back(t_proceso);
     }
+
 
 }
 bool interact_teclado(int& segundos, int i, int j, Memoria& memoria,vector<proceso>&bloqueados, vector<proceso>& listos, vector<proceso>& finalizados, int& auxx, int& cont, int& quantum) {
@@ -354,8 +358,15 @@ bool interact_teclado(int& segundos, int i, int j, Memoria& memoria,vector<proce
 
         case 105:
         case 73://I
-            //lista_lote[i].remplazar_f_b();
 
+            //memoria.get_proceso(memoria.get_ejecucion()).marcar_bloqueado(true);
+            memoria.marcar_bloqueado(true);
+
+            memoria.set_ejecucion(memoria.siguiente(memoria.get_ejecucion()));
+            //memoria.get_proceso(memoria.get_ejecucion()).set_bloqueado();
+
+            //lista_lote[i].remplazar_f_b();
+            /*
             bloqueados.push_back(memoria.get_proceso(j));
             //memoria.eliminar_f();
             imprimir(40, 40);
@@ -363,7 +374,7 @@ bool interact_teclado(int& segundos, int i, int j, Memoria& memoria,vector<proce
             if (memoria.size() == 0) {
                 espera_cpu(bloqueados,memoria,segundos,i,j);
             }
-            return true;
+            return true;*/
             break;
     }
     return false;
@@ -401,10 +412,12 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
 
     int i = 0;
     int j = 0, procesos = 0;
+    int tiempo=1;
     int en_ejecucion=0;
     memoria.set_ejecucion(en_ejecucion);
     do {
         en_ejecucion=memoria.get_ejecucion();
+
         imprimir(20,15);
         cout<<"MEMORIA "<<memoria.get_ejecucion();
         imprimir(20,16);
@@ -413,17 +426,29 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
         imprimir_op_actual(izq, der, i, en_ejecucion, memoria);//IMPRIME EL APARTADO DEL ACTUAL
         imprimir(70, 0);
         cout << "NUEVOS: " << listos.size();
-
-
+        if(_kbhit()){
+            interact_teclado(segundos,0,0,memoria,bloqueados,listos,finalizados,aux,total_oper,quantum);
+        }
+        if(!listos.empty()){
+            if(memoria.get_disponible()>=listos[0].get_peso()){
+                memoria.buscar(listos[0]);
+                listos.erase(listos.begin());
+            }
+        }
         cout<<memoria;
 
-        Sleep(1000);
+        Sleep(100);
+        if(tiempo%10==0){
+            if(memoria.restar()){
+                finalizados.push_back(memoria.get_proceso(memoria.get_ejecucion()));
+            }
+            if(memoria.get_proceso(en_ejecucion).get_quantum()<1){
+                memoria.fin_quantum(en_ejecucion,quantum);
 
-        memoria.restar();
-        if(memoria.get_proceso(en_ejecucion).get_quantum()<1){
-            memoria.fin_quantum(en_ejecucion,quantum);
-
+            }
         }
+
+        tiempo++;
     } while (memoria.get_ocupado()>0);
     system("pause");
 

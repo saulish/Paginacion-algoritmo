@@ -12,6 +12,7 @@ private:
     int num2;
     double resultado=0;
     bool terminado=false;
+    bool bloqueado=false;
     vector<int>pos_memoria;
     int peso;
     int t_transcurrido = 0;
@@ -52,7 +53,12 @@ public:
     void set_quantum(int n) {
         quantum = n;
     }
-
+    void marcar_bloqueado(bool x){
+        bloqueado=x;
+    }
+    bool get_bloqueado(){
+        return bloqueado;
+    }
     void restar_quantum() {
         quantum--;
     }
