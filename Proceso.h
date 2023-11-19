@@ -16,7 +16,7 @@ private:
     vector<int>pos_memoria;
     int peso;
     int t_transcurrido = 0;
-    int t_bloqueado = 8;
+    int t_bloqueado = 9;
     int llegada=0;//LLEGADA XD
     int finalizacion; //FINALIZACION XD
     int retorno;//DESDE QUE LLEGA HASTA QUE TERMINA

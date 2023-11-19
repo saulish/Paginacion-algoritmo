@@ -18,6 +18,7 @@ void imprimir_tabla(int x, int y) {
 class Memoria {
 private:
     int cant;
+    int bloqueados;
     bool llena;
     int tamanio = 200;
     int disponible;
@@ -54,7 +55,6 @@ public:
         if(llena) return false;
         if ((frames -1-(pr.get_peso())/5) <=0  ) {
             llena =true;
-            system("pause");
             return false;
         }
         cant++;
@@ -86,8 +86,20 @@ public:
     void modificar_terminado(int i){
         memoria[i].set_terminado(true);
     }
-    void set_in(proceso& pr){
-
+    void aumentar_bloqueados(){
+        bloqueados++;
+    }
+    int get_bloqueados(){
+        return bloqueados;
+    }
+    int primer_bloqueado(){
+        int primero=0;
+        for(int i=0;i<memoria.size();i++){
+            if(memoria[i].get_t_bloqueado()<memoria[primero].get_t_bloqueado()){
+                primero=i;
+            }
+        }
+        return primero;
     }
     int siguiente(int x){
         for(int i=x;i<memoria.size();i++){
@@ -151,16 +163,20 @@ public:
                 ocupa--;
             }
         }
-        cout<<"EL TAMANIO ES: "<<posiciones.size();
-        system("pause");
+
         pr.set_posicion(posiciones);
         set_buscado(pr);
 
 
     }
+    void set_quantum(int quantum){
+        vector<int>t_pos=memoria[ejecucion].get_vector();
+        for(int x : t_pos){
+            memoria[x].set_quantum(quantum);
+        }
+    }
     void fin_quantum(int x, int quantum){
         memoria[x].set_quantum(quantum);
-        vector<int>t_pos=memoria[x].get_vector();
         if(ocupado>0){
             int next=siguiente(ejecucion);
             ejecucion=next;
@@ -196,6 +212,24 @@ public:
         for(int i=0;i<t_pos.size();i++){
             memoria[t_pos[i]].marcar_bloqueado(x);
         }
+    }
+    void fin_bloqueado(int i){
+        if(memoria[i].get_t_bloqueado()==0){
+            vector<int>t_ps=memoria[i].get_vector();
+            bloqueados--;
+
+            for(int x: t_ps){
+                memoria[x].set_bloqueado();
+                memoria[x].marcar_bloqueado(false);
+            }
+        }
+    }
+    void restar_bloqueados(int i){
+        if(memoria[i].get_bloqueado()){
+            memoria[i].restar_bloqueado();
+
+        }
+
     }
     bool anterior(){
 
@@ -259,7 +293,7 @@ public:
         }
         aux++;
         auxx=0;
-        for (int i=3;i<6;i++){
+        for (int i=3;i<7;i++){
             imprimir_tabla(100+auxx,10+aux);
             salida << "|SO|";
             auxx+=5;
