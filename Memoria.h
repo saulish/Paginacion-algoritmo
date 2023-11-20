@@ -83,8 +83,8 @@ public:
     bool get_llena(){
         return llena;
     }
-    void modificar_terminado(int i){
-        memoria[i].set_terminado(true);
+    void modificar_terminado(){
+        memoria[ejecucion].set_terminado(true);
     }
     void aumentar_bloqueados(){
         bloqueados++;
@@ -110,6 +110,15 @@ public:
             if(memoria[i].get_id()!=-1 && memoria[i].get_id()!= memoria[ejecucion].get_id() && !memoria[i].get_bloqueado())
                 return i;
         }
+        //CASO DE BLOQUEADOS
+        if(bloqueados==cant){
+            for(int i=0;i<memoria.size();i++){
+                if(memoria[i].get_id()!=-1 && memoria[i].get_id()!= memoria[ejecucion].get_id())
+                    return i;
+            }
+        }
+
+
         return x;
 
     }
@@ -202,10 +211,14 @@ public:
             ejecucion=next;
         }
 
+
+
+
     }
     void set_tiempos(int& segundos){
         memoria[ejecucion].set_finalizado(segundos);
-        memoria[ejecucion].set_tiempos(segundos);
+        if(!memoria[ejecucion].get_bloqueado())
+            memoria[ejecucion].set_tiempos(segundos);
     }
     void marcar_bloqueado(bool x){
         vector<int>t_pos=memoria[ejecucion].get_vector();
@@ -214,7 +227,7 @@ public:
         }
     }
     void fin_bloqueado(int i){
-        if(memoria[i].get_t_bloqueado()==0){
+        if(memoria[i].get_t_bloqueado()<=0){
             vector<int>t_ps=memoria[i].get_vector();
             bloqueados--;
 

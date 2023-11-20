@@ -7,6 +7,11 @@
 #include <cmath>
 #include "Proceso.h"
 #include <ctime>
+#define BLUE            1
+#define RED             4
+#define IDK             5
+#define SO              6
+#define DEFAULT         7
 using namespace std;
 proceso ingresar_datos(Memoria& memoria, int contador, int opers) {
     //cout << "Vamos a llenar tus operaciones" << endl;
@@ -19,7 +24,6 @@ proceso ingresar_datos(Memoria& memoria, int contador, int opers) {
     int t_id, t_tme, t_num1, t_num2;
     int aux = 0;
     int id_auto = contador+1;
-    cout<<id_auto;
     int tme_auto, num1_auto, num2_auto;
     char op_auto = ' ';
     double t_res;
@@ -177,29 +181,39 @@ void imprimir_nada(int izq, int der,Memoria& memoria, int primero) {
     cout << "|";
 
 }
+void limpiar_actual(int izq, int der){
+    for(int i=0;i<9;i++){
+            imprimir(40,9+i);
+            cout<<"                ";
+
+    }
+    //system("pause");
+}
 void imprimir_op_actual(int izq, int der, int i, int j, Memoria& memoria) {
+    limpiar_actual(izq, der);
     imprimir(izq, 9);
-    cout << "|";
+    //cout << "|";
     imprimir(40, 9);
-    cout << "--------------------";
+    cout <<  "Quantum: " << memoria.get_proceso(j).get_quantum();
     imprimir(der, 9);
-    cout << "|";
+    //cout << "|";
     imprimir(der, 10);
     cout << "|";
     imprimir(40, 10);
-    cout << "ID: " << memoria.get_proceso(j).get_id() << "  " << endl;
+    cout <<"--------------------";
     imprimir(izq, 10);
     cout << "|";
     imprimir(izq, 11);
     cout << "|";
     imprimir(40, 11);
-    cout << "Tamanio: " << memoria.get_proceso(j).get_peso() << "  " << endl;
+    cout << "ID: " << memoria.get_proceso(j).get_id() << "  " << endl;
     imprimir(der, 11);
     cout << "|";
     imprimir(izq, 12);
     cout << "|";
     imprimir(40, 12);
-    cout << "Quantum: " << memoria.get_proceso(j).get_quantum()<<"  ";
+    cout << "Tamanio: " << memoria.get_proceso(j).get_peso() << "  " << endl;
+
     imprimir(der, 12);
     cout << "|";
     imprimir(izq, 13);
@@ -249,7 +263,8 @@ void imprimir_op_actual(int izq, int der, int i, int j, Memoria& memoria) {
     cout << "|";
 
 }
-void imprimir_finalizados(int& segundos, int i, int j, proceso proceso, int& cont, int& aux, int procesos) {
+void imprimir_finalizados(int& segundos, int i, int j, proceso pr, int& cont, int& aux, int procesos) {
+    //cont es de procesos, aux es del eje Y
     if (cont == 5) {
         system("cls");
         cont = 0;
@@ -271,19 +286,19 @@ void imprimir_finalizados(int& segundos, int i, int j, proceso proceso, int& con
 
     aux++;
     imprimir(0, aux);
-    cout << "ID: " << proceso.get_id() << endl; //PROBLEMA ID
+    cout << "ID: " << pr.get_id() << endl; //PROBLEMA ID
     imprimir(38, aux);
     cout << "|";
     aux++;
     imprimir(0, aux);
-    cout << "TME: " << proceso.get_tme() << endl;
+    cout << "TME: " << pr.get_tme() << endl;
     imprimir(38, aux);
     cout << "|";
     aux++;
     imprimir(0, aux);
-    cout << "Proceso: " << proceso.get_num1() << proceso.get_oper() << proceso.get_num2() << " = ";
-    if (!proceso.get_terminado()) {
-        cout << proceso.get_resultado() << endl;
+    cout << "Proceso: " << pr.get_num1() << pr.get_oper() << pr.get_num2() << " = ";
+    if (!pr.get_terminado()) {
+        cout << pr.get_resultado() << endl;
 
     }
     else { cout << "ERROR" << endl; }
@@ -393,11 +408,146 @@ void add_proceso(Memoria& memoria, vector<proceso>& bloqueados, vector<proceso>&
 
 
 }
-bool interact_teclado(int& segundos, int i, int j, Memoria& memoria,vector<proceso>&bloqueados, vector<proceso>& listos, vector<proceso>& finalizados, int& auxx, int& cont, int& quantum) {
+void ver_memoria(Memoria& memoria, vector<proceso>&listos, vector<proceso>& bloqueados, vector<proceso>& finalizados, int& segundos) {
+    system("cls");
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    int tecla;
+    int t_tamanio_total=0;
+    int t_peso=0;
+    set<int>ids;
+    int aux_x=20,aux_y=1;
+    imprimir(0,0);
+    cout << "TABLA DE PAGINAS" ;
+    imprimir(18,0);
+    cout<<"___________________________________________________";
+
+    for(int i=0;i<memoria.size();i++){
+        if(t_tamanio_total==0)
+            t_tamanio_total=memoria.get_proceso(i).get_peso();
+
+        if(memoria.get_proceso(i).get_id()!=-1 ){
+            ids.insert(memoria.get_proceso(i).get_id());
+            if(t_tamanio_total<5){
+                t_peso=t_tamanio_total;
+                t_tamanio_total=0;
+            }else{
+                t_peso=5;
+                t_tamanio_total-=5;
+            }
+        }
+
+        imprimir(aux_x,aux_y);
+        cout<<"#"<<i;
+        for(int j=0;j<5;j++){
+            imprimir(aux_x+8,aux_y+j);
+            cout<<"|";
+        }
+
+        imprimir(aux_x,aux_y+1);
+        cout<<"|";
+
+        if(memoria.get_proceso(i).get_id()==-1){
+            cout<<"LIBRE";
+            cout<<"|";
+        }else{
+            if(memoria.get_proceso(i).get_bloqueado()){
+                 SetConsoleTextAttribute(hConsole, RED);
+
+            }
+            else if(memoria.get_proceso(memoria.get_ejecucion()).get_id()==memoria.get_proceso(i).get_id())
+                 SetConsoleTextAttribute(hConsole, BLUE);
+            else{
+                 SetConsoleTextAttribute(hConsole, IDK);
+
+            }
+            cout<<"ID:"<<memoria.get_proceso(i).get_id();
+            SetConsoleTextAttribute(hConsole, DEFAULT);
+
+            cout<<"|";
+            imprimir(aux_x,aux_y+2);
+            cout<<"Size:"<<memoria.get_proceso(i).get_peso();
+            imprimir(aux_x,aux_y+3);
+            cout<<t_peso<<"/5";
+        }
+
+
+        aux_x+=10;
+
+        if(i!=39 && (i+1)%5==0){
+            imprimir(18,aux_y+4);
+            cout<<"___________________________________________________";
+            aux_y+=5;
+            aux_x=20;
+        }
+
+    }
+    aux_y+=5;
+    aux_x=20;
+    aux_x=70;
+    aux_y-=5;
+    imprimir(65,aux_y-1);
+    //cout<<"___________________________________________";
+    for (int i=40;i<44;i++){
+        imprimir(aux_x,aux_y);
+        cout<<"#"<<i;
+        for(int j=0;j<5;j++){
+            imprimir(aux_x+8,aux_y+j);
+            cout<<"|";
+        }
+        SetConsoleTextAttribute(hConsole, SO);
+        imprimir(aux_x,aux_y+1);
+        cout << "|SO|";
+        SetConsoleTextAttribute(hConsole, DEFAULT);
+
+
+
+        aux_x+=10;
+    }
+    imprimir(68,aux_y+3);
+    cout<<"_________________________________________";
+    imprimir(70,2);
+    SetConsoleTextAttribute(hConsole, BLUE);
+    cout<<"En ejecucion";
+    imprimir(70,3);
+    SetConsoleTextAttribute(hConsole, RED);
+    cout<<"Bloqueados";
+    imprimir(70,4);
+    SetConsoleTextAttribute(hConsole, IDK);
+    cout<<"Listos";
+    imprimir(70,5);
+    SetConsoleTextAttribute(hConsole, SO);
+    cout<<"Sistema operativo";
+    SetConsoleTextAttribute(hConsole, DEFAULT);
+
+    imprimir(70,1);
+    cout << "Presiona C para continuar con el programa";
+    do {
+        if (_kbhit()) {
+            tecla = _getch();
+            if (tecla == 'C' || tecla == 'c') {
+                break;
+            }
+        }
+    } while (true);
+
+}
+bool interact_teclado(int& segundos, int i, int j, Memoria& memoria,vector<proceso>&bloqueados, vector<proceso>& listos, vector<proceso>& finalizados, int& auxx, int& cont, int& quantum, int& contt) {
     int aux = 1, tecla;
 
     tecla = _getch();
     switch (tecla) {
+        case 't':
+        case 'T':
+            ver_memoria(memoria, listos, bloqueados, finalizados,segundos);
+            cont = 0;
+            auxx = 0;
+            system("cls");
+
+            if(!finalizados.empty())
+                imprimir_finalizados(segundos, 0, 0, finalizados[finalizados.size()-1], cont, auxx, finalizados.size()-1);
+            imprimir_op_actual(39, 60, i, j, memoria);
+            break;
         case 'b':
         case 'B':
             imprimir_tabla_temp(memoria, listos, bloqueados, finalizados,segundos);
@@ -408,14 +558,15 @@ bool interact_teclado(int& segundos, int i, int j, Memoria& memoria,vector<proce
             if(!finalizados.empty())
                 imprimir_finalizados(segundos, 0, 0, finalizados[finalizados.size()-1], cont, auxx, finalizados.size()-1);
             imprimir_op_actual(39, 60, i, j, memoria);
-            //imprimir_lote_actual(i, 39, 60, memoria);
             break;
         case 'n':
         case 'N':
+                                            
+
             add_proceso(memoria, bloqueados, listos ,finalizados,segundos,quantum);
             break;
         case 112:
-        case 80:
+        case 80://P
 
             imprimir(70, 20);
             cout << "EN PAUSE";
@@ -442,8 +593,16 @@ bool interact_teclado(int& segundos, int i, int j, Memoria& memoria,vector<proce
             break;
 
         case 101:
-        case 69:
-            memoria.modificar_terminado(j);
+        case 69://E
+            memoria.modificar_terminado();
+            memoria.set_tiempos(segundos);
+            imprimir_finalizados(segundos,i,j,memoria.get_proceso(memoria.get_ejecucion()),cont,auxx,contt);
+            finalizados.push_back(memoria.get_proceso(memoria.get_ejecucion()));
+            memoria.terminado(memoria.get_ejecucion());
+            if( memoria.get_cantidad()>0 && memoria.get_bloqueados()==memoria.get_cantidad()){
+                espera_cpu(memoria,segundos,0,0);
+            }
+
             break;
 
         case 105:
@@ -475,6 +634,40 @@ void imprimir_disponible(Memoria& memoria){
     cout<<"La memoria ocupada es: "<<memoria.get_ocupado();
 
 }
+void imprimir_siguiente(vector<proceso>listos, int izq, int der){
+    imprimir(izq,20);
+    cout<<"|";
+    imprimir(40, 20);
+    cout << "Procesos listos: " << listos.size();
+    imprimir(der,20);
+    cout<<"|";
+    imprimir(izq,21);
+    cout<<"|";
+
+    imprimir(der,21);
+    cout<<"|";
+    imprimir(izq,22);
+    cout<<"|";
+
+    imprimir(der,22);
+    cout<<"|";
+    imprimir(40,23);
+    cout << "--------------------";
+    if(!listos.empty()){
+
+        imprimir(40, 21);
+        cout << "ID siguiente:  " << listos[0].get_id();
+
+        imprimir(40, 22);
+        cout << "Tamanio:  " << listos[0].get_peso();
+
+    }else{
+        for(int i=21;i<23;i++){
+            imprimir(40,i);
+            cout<<"                   ";
+        }
+    }
+}
 void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<proceso>& listos, int quantum) {
     system("cls");
 
@@ -501,27 +694,22 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
         if(!memoria.get_proceso(memoria.get_ejecucion()).get_inicio()){
             memoria.set_respuesta(segundos);
         }
-        /*
-        imprimir(20,15);
-        cout<<"MEMORIA "<<memoria.get_ejecucion()<<" ";
-        imprimir(20,16);
-        cout<<"PROGRAMA "<<en_ejecucion<<" ";
-        imprimir_disponible(memoria);
-        imprimir(70, 0);
-        cout << "NUEVOS: " << listos.size();*/
+
+        imprimir_siguiente(listos,izq,der);
+
         imprimir_op_actual(izq, der, i, en_ejecucion, memoria);//IMPRIME EL APARTADO DEL ACTUAL
         if(_kbhit()){
-            interact_teclado(segundos,0,0,memoria,bloqueados,listos,finalizados,aux,total_oper,quantum);
+            interact_teclado(segundos,0,0,memoria,bloqueados,listos,finalizados,aux,cont,quantum,cont);
         }
 
         if(tiempo%10==0){
             segundos++;
             if(memoria.restar()){
                 memoria.set_tiempos(segundos);
+                imprimir_finalizados(segundos,i,j,memoria.get_proceso(memoria.get_ejecucion()),cont,aux,total_oper);
                 finalizados.push_back(memoria.get_proceso(memoria.get_ejecucion()));
                 memoria.terminado(memoria.get_ejecucion());
                 if(memoria.get_cantidad()>0 && memoria.get_bloqueados()==memoria.get_cantidad()){
-                    system("pause");
                     espera_cpu(memoria,segundos,0,0);
                 }
             }
@@ -537,17 +725,8 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
         }
         cout<<memoria;
 
-        imprimir(0,25);
-        cout<<"FRAMES RESTANTES: "<<memoria.get_frames()<<" ";
-        imprimir(0,26);
-        cout<<"ACTUAL: "<<memoria.get_ejecucion();
-        imprimir(0,27);
-        cout<<memoria.get_cantidad();
-        imprimir(0,28);
-        cout<<memoria.get_bloqueados();
         actualizar_global(segundos);
         if(!listos.empty() ){
-            //if()
             if((memoria.get_frames() >= ceil(listos[0].get_peso()/5))){
                 listos[0].set_llegada(segundos);
                 memoria.buscar(listos[0]);
@@ -555,7 +734,6 @@ void imprimir_inicio(Memoria &memoria, int total_oper, int cant_lotes, vector<pr
                 if(!listos.empty()){
                     if((ceil(listos[0].get_peso())/5)<=memoria.get_frames()){
                         memoria.set_llena(true);
-                        //system("pause");
                     }
                 }
             }
