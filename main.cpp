@@ -110,22 +110,29 @@ void actualizar_global(int& segundos) {
 }
 
 void imprimir_nada(int izq, int der,Memoria& memoria, int primero) {
+    //limpiar_actual(izq, der);
     imprimir(izq, 9);
-    cout << "|";
+    //cout << "|";
     imprimir(40, 9);
-    cout << "---PROCESO NULO--";
+    cout <<  "Quantum:               " ;
     imprimir(der, 9);
-    cout << "|";
+    //cout << "|";
     imprimir(der, 10);
     cout << "|";
     imprimir(40, 10);
-    cout << "ID: " <<memoria.get_proceso(primero).get_id()<<"  " << endl;
+    cout <<"--PROCESO NULO-----";
     imprimir(izq, 10);
     cout << "|";
     imprimir(izq, 11);
     cout << "|";
     imprimir(40, 11);
-    cout << "Tamanio: " << "  " << endl;
+    cout << "ID: " <<  "      " << endl;
+    imprimir(der, 11);
+    cout << "|";
+    imprimir(izq, 12);
+    cout << "|";
+    imprimir(40, 12);
+    cout << "Tamanio:                 " ;
     imprimir(der, 11);
     cout << "|";
     imprimir(izq, 12);
@@ -143,19 +150,19 @@ void imprimir_nada(int izq, int der,Memoria& memoria, int primero) {
     imprimir(izq, 14);
     cout << "|";
     imprimir(40, 14);
-    cout << "Operacion: " <<endl;
+    cout << "Operacion:          " <<endl;
     imprimir(der, 14);
     cout << "|";
     imprimir(izq, 15);
     cout << "|";
     imprimir(40, 15);
-    cout << "Numero 1: " << endl;
+    cout << "Numero 1:              " << endl;
     imprimir(der, 15);
     cout << "|";
     imprimir(izq, 16);
     cout << "|";
     imprimir(40, 16);
-    cout << "Numero 2: " <<  endl;
+    cout << "Numero 2:              " <<  endl;
     imprimir(der, 16);
     cout << "|";
 
@@ -219,7 +226,7 @@ void imprimir_op_actual(int izq, int der, int i, int j, Memoria& memoria) {
     imprimir(izq, 13);
     cout << "|";
     imprimir(40, 13);
-    cout << "TME: " << memoria.get_proceso(j).get_tme() << "  "<<endl;
+    cout << "TME: " << memoria.get_proceso(j).get_tme() << "                "<<endl;
     imprimir(der, 13);
     cout << "|";
     imprimir(izq, 14);
