@@ -1,14 +1,15 @@
-name: Ejecutar Programa C++
+name: Ejecutar Programa C++ en Windows
 
 on: [push]
 
 jobs:
   ejecutar_programa:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Configurar el entorno
-      uses: actions/setup-node@v2
+      run: choco install mingw -y
+      shell: powershell
 
     - name: Clonar el repositorio
       run: git clone https://github.com/saulish/Paginacion-algoritmo.git
@@ -17,4 +18,5 @@ jobs:
       run: |
         cd Paginacion-algoritmo
         g++ -o ejecutable main.cpp
-        ./ejecutable
+        ejecutable.exe
+      shell: powershell
