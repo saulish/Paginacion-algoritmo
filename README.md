@@ -42,11 +42,6 @@ La implementación de la Tabla de Páginas agregó una nueva capa de complejidad
 
 Este programa está desarrollado en C++. La elección de este lenguaje se basa en la experiencia previa con programas similares, su capacidad para manejar simulaciones de sistemas operativos y la familiaridad con su sintaxis.
 
-## Instrucciones de Ejecución
 
-1. Clona el repositorio: `git clone https://github.com/tu-usuario/nombre-del-repositorio.git`
-2. Navega al directorio: `cd nombre-del-repositorio`
-3. Compila el programa: `g++ -o ejecutable archivo_fuente.cpp`
-4. Ejecuta el programa: `./ejecutable`
 
 Esperamos que esta simulación proporcione una experiencia completa para comprender la paginación simple en combinación con el algoritmo de Round Robin. ¡Disfruta explorando las funcionalidades y descubriendo la complejidad detrás de la asignación de memoria en sistemas operativos!
