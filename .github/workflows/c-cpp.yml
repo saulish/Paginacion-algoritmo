@@ -18,5 +18,7 @@ jobs:
       run: |
         cd Paginacion-algoritmo
         g++ -o ejecutable main.cpp
-        ejecutable.exe
+        RefreshEnv
+        .\ejecutable.exe
       shell: powershell
+
