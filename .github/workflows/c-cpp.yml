@@ -1,23 +1,20 @@
-name: C/C++ CI
+name: Ejecutar Programa C++
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+on: [push]
 
 jobs:
-  build:
-
+  ejecutar_programa:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    - name: Configurar el entorno
+      uses: actions/setup-node@v2
+
+    - name: Clonar el repositorio
+      run: git clone https://github.com/saulish/Paginacion-algoritmo.git
+
+    - name: Compilar y ejecutar
+      run: |
+        cd Paginacion-algoritmo
+        g++ -o ejecutable main.cpp
+        ./ejecutable
